@@ -1,0 +1,136 @@
+counting:
+
+ -set of n distinct items
+  choose k items with replacements, order matters
+  n*n*n     k =3         n^k
+
+   -set of n distinct items
+  choose k items , order matters
+  n*(n-1)*(n-2) = npk
+
+  -set of n distinct items
+  choose k items k<=n
+
+  npk - (extraaaaaaaaa)
+  n = 5 k = 3 set{1,5,4}
+  1 5 4
+  1 4 5
+  5 4 1
+  5 1 4
+  4 5 1
+  4 1 5
+  6 WAYS you need to remove them for each set
+  npk/x and x here k! === ncr
+
+ we can also call them as subset of size k from a set of n dist items
+ n C k = n C (n-k)
+
+ nC0 + nC1 + nC2 + ... + nCn = 2^n
+ we can take subset of size 0 or subset of size 1 of subset of size 2 ... until subset of size n
+ it means all possibles of the items take or leave
+
+
+ ----------
+ if we have set of n-1 items = {1 .. n-1}
+ and set of size n = {1 ... n}
+
+ I need subset of size k
+ we have two options
+ if we have n so the num of k remaining will be k-1     n-1 C k-1
+ or if we dont have n we will choose k items --> n-1 C k
+n-1 C k + n-1 C k-1 =
+
+                    1
+                  1   1
+                 1  2  1
+                1  3  3  1
+               1  4  6  4  1
+              1  5  10  10  5 1
+pascal triangle
+bounderies should be 1 and each cell is summation of the two numbers above them
+ formula  = nCk = n-1 C k-1 + n-1 C k
+ ------------
+ (X+Y)^n = (X+Y).(x+y).(x+y)....... n times
+ I need the coefficient of X(i) y(n-i)
+ choose i brackets from n
+ nCi
+                            (X+Y)^n  = sigma (n C i) (X^i) Y(n-i)
+ if you notice that
+ (x+y)^2 =  1 x^2 + 2 xy + 1 y^2
+ (x+y)^3 = 1 x^3 + 3 x^2 y + 3 x y^2 + y ^ 3
+          1 2 1
+          1 3 3 1
+          1 4 6 4 1
+          pascalllllllllllllll
+          so that it is called binomial coefficient نظرية ذات الحدين
+
+ - if we need to calc sigma i from 0 to n (n C i) = (1+1)^n = 2^n
+ ---------------
+ importanttttttttttttttt
+ n candies -- > identical
+ k children --> distinct
+ n = 3 k = 2
+ n stars and k -1 bars represent distinct way
+ *| * | *
+ bijection = one_to_one relation
+  means each string represent a new way
+
+  n stars and k -1 bars
+  I have size of n + k -1
+  If I determine the positions of stars and the remaining will be stars
+  so choose k-1
+  n+k-1 C k-1
+-----------------------------
+ if I want to count number of paths from (0,0) to (5,5)
+ and you can only go down or right
+ if I have string has n rights and n downs so it corresponds to path
+ count string that represent n rights and n downs
+ (2*n C n) like the candies
+
+
+----
+ another version
+  if I want to count number of paths from (0,0) to (5,5) but dont cross the line segment y = x
+
+  get the total minus the extraaa
+  total = 2n C n
+  count the paths that cross this diagonal
+  proof in the video that each path corresponds from (-1,1) --> (n,n)
+  ==== path from (0,0) --> (n,n) cross the x
+  one to one relation
+  n+1 down and n - 1 right
+  (2n Cn) - (2n C n+1)
+   2n C n - 2n C n+1 == catalan number = Cn = (2n C n)/(n+1) = (2*(2n-1))/(n+1))*(C n-1)
+
+
+  --- another sol for this version
+  you can notice that if you go right two times you can not go down more than two times
+  example
+  D >= R
+  DRR (it doesnot work)
+  each D represent ( and each R)
+  DDRDRR
+  (()()) if the path doesn't corresponds to a regular sequence
+ it is logically right because when you check the sequence. make variable and if it is open +1 and close -1
+ and if the variable is smaller than 0, it is not bracket sequence and this is what we need no one cross the other
+ D >= R
+ so number of regular bracket sequences == no of ways from 0 0 to n,n which don't cross
+ size of 2n pairs
+ bracket sequence of n pairs of brackets
+ (......)
+ ()(n-1)-- > c0 * Cn-1
+ (1)(n-2) --> C1 Cn-2
+ (2)(n-3)--> C2 Cn-3
+ (0)(n-1) --> C0 Cn-1
+ so the sum is the catalan number
+
+ so number of regular bracket sequence of n pairs = sigma C(i)* C(n-i-1) = Cn catalan number
+
+ -------------
+ مهمممممممممممممممممممممممممم
+ sigma C(i)* C(n-i-1) = Cn catalan number = (2n Cn) - (2n C n+1)
+
+ ---------------
+
+ n sided convex polygon , divide n-2 triangles,such that sides of triangles dont cross
+ الشكل كله محدب مش مقعر
