@@ -1,0 +1,107 @@
+struct Segtree {
+    struct node{
+        ll val,maxx,pre,suf;
+        node(ll o){val = maxx = pre= suf = o;}
+        node(){val = 0;maxx = 0;pre = 0;suf = 0;}
+    };
+    ll sz;
+    vector<node> seg;
+    vector<ll> ele, lazy;
+    node merge(node l, node r){
+        node res;
+        res.val = l.val + r.val;
+        res.maxx = max({l.maxx,r.maxx,l.suf + r.pre});
+        res.pre = max(l.pre,l.val +r.pre);
+        res.suf = max(r.suf,r.val + l.suf);
+        return res;
+    }
+    Segtree(vector<ll> &arr) {
+        sz = arr.size();
+        seg.resize(4 * sz); // Resize the seg tree to fit all nodes
+        ele = arr;
+        lazy.resize(4 * sz, -1e18); // Lazy propagation initialization
+        build(1, 0, sz - 1); // Build the segment tree
+    }
+    void build(ll p, ll l, ll r) // rows
+    {
+        if (l == r) // you reached the leaf
+        {
+            seg[p] = node(ele[l]);
+            return;
+        }
+        ll mid = (l + r) / 2;
+        build(p << 1, l, mid); // left
+        build(p << 1 | 1, mid + 1, r); // right
+        seg[p] = merge(seg[p << 1] , seg[p << 1 | 1]); // sum of left and right children
+    }
+    // Propagate the lazy value to children
+    void propagate(ll p, ll l, ll r) {
+        if (lazy[p] != -1e18) { // If there's a lazy value to propagate
+            seg[p] = node(lazy[p] *(r-l+1)); // because the val will be the sum of this segment
+                if (l != r) { // Propagate to children if not a leaf node
+                    lazy[p << 1] =lazy[p]; // Left child
+                    lazy[p << 1 | 1] =lazy[p]; // Right child
+                }
+            lazy[p] = -1e18; // Clear the lazy value for this node
+        }
+    }
+    void update(ll p,ll l,ll r, ll pos,ll val)
+    {
+        propagate(p,l,r);
+        if(l == r)
+        {
+            seg[p] = node(val);
+            propagate(p,l,r);
+            return;
+        }
+        ll mid = (l + r) / 2;
+        if(pos <= mid)update(p << 1, l, mid, pos, val); // Update the left child
+        else update(p << 1 | 1, mid+1, r, pos, val); // Update the right child
+        // 2*p +1
+        seg[p] = merge(seg[p << 1],seg[p << 1 | 1]);
+    }
+    // Range update function
+    void update_range(ll p, ll l, ll r, ll a, ll b, ll val) {
+        propagate(p, l, r); // Ensure any pending propagation is applied
+        if (l > b || r < a) return; // No overlap
+        if (l >= a && r <= b) { // Complete overlap
+            lazy[p] = val;
+            propagate(p,l,r);
+            return;
+        }
+        ll mid = (l + r) / 2;
+        update_range(p << 1, l, mid, a, b, val); // Update left child
+        update_range(p << 1 | 1, mid + 1, r, a, b, val); // Update right child
+        seg[p] = merge(seg[p << 1] , seg[p << 1 | 1]); // Recalculate current node
+    }
+    void range_update(ll l, ll r, ll val) {
+        update_range(1, 0, sz - 1, l, r, val); // Public interface for range update
+    }
+    void update_it(ll idx,ll val)
+    {
+        update(1,0,sz-1,idx,val);
+    }
+    ll query(ll l, ll r) {
+        return query(1, 0, sz - 1, l, r).pre;
+    }
+    node query(ll p, ll l, ll r, ll a, ll b) {
+        propagate(p, l, r); // Apply any pending propagation
+        if (l >= a && r <= b) return seg[p]; // the segment inside l and r
+        if (l > b || r < a || l > r) return node(0) ; // the segment outside the range
+        ll mid = (l + r) / 2;
+        node left = query(p << 1, l, mid, a, b); // Query left
+        node right = query(p << 1 | 1, mid + 1, r, a, b); // Query right
+        return merge(left , right);
+    }
+    int kth(ll node, ll l, ll r, ll idx) {
+        if (l == r) return r;
+        propagate(node, l, r); // Apply any pending propagation
+        ll mid = (l + r) / 2;
+        propagate(node << 1, l, mid); // Ensure left child is updated
+        propagate(node << 1 | 1, mid + 1, r); // Ensure right child is updated
+        if (seg[node << 1].val >= idx) {
+            return kth(node << 1, l, mid, idx);
+        }
+        return kth(node << 1 | 1, mid + 1, r, idx - seg[node << 1].val); // 3  4  go inside 4 now I want idx-3
+    }
+};

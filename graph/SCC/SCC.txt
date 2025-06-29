@@ -1,0 +1,83 @@
+#include <bits/stdc++.h>
+
+#define ll long long
+#define el endl
+#define pb push_back
+#define all(x) begin(x), end(x)
+using namespace std;
+const int modd = 1e9 + 7;
+
+
+void MO() {
+    ios_base::sync_with_stdio(0);
+    cin.tie(0);
+    cout.tie(0);
+}
+
+void solve() {
+    /*
+     SCC for directed graphs
+     the final result will be dag
+     the main idea to reverse the edges because you know if you reversed the edges, it stills SCC
+     so yesssssssssss
+     * */
+    ll n,m;
+    cin >> n >> m;
+    vector<vector<ll>> adj(n),radj(n);
+    for(int i = 0;i<n;i++)
+    {
+        ll u,v;
+        cin >> u >> v;
+        u--;v--;
+        adj[u].pb(v);
+        radj[v].pb(u);
+    }
+    vector<ll> comp,vis(n);
+    function<void(int,vector<vector<ll>>&)> dfs = [&](int node,vector<vector<ll>> &ad)
+    {
+        vis[node] = 1;
+        for(auto v : ad[node])
+        {
+            if(vis[v])continue;
+            dfs(node,ad);
+        }
+        comp.pb(node);
+    };
+    for(int i = 0;i<n;i++)
+    {
+        if(vis[i])continue;
+        dfs(i,adj);
+    }
+    auto order = comp;
+    reverse(all(order));
+    fill(all(vis),0);
+    vector<vector<ll>> scc;
+    vector<ll> id(n);
+    for(auto v : order)
+    {
+        if(vis[v])continue;
+        comp.clear();
+        dfs(v,radj);
+        scc.pb(comp);
+        for(auto u : comp)
+            id[u] = comp.front();
+    }
+    vector<vector<ll>> dag(n);
+    for(int i = 0;i<n;i++)
+    {
+        for(auto u : adj[i])
+        {
+            if(id[i] != id[u])
+                dag[id[i]].pb(id[u]);
+        }
+    }
+}
+
+signed main() {
+    MO();
+    int t = 1;
+    cin >> t;
+    while (t--) {
+        solve();
+    }
+}

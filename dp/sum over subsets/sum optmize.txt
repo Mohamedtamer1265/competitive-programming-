@@ -1,0 +1,24 @@
+  int n;
+    cin >> n;
+    int cur = 0;
+    vector<int> id(26);
+    string rem = "NUCPA";
+    for (char c = 'A'; c <= 'Z'; c++) {
+        if (rem.find(c) != string::npos) continue;
+        id[c - 'A'] = cur++;
+    }
+    const int N = 21;
+    vector<int> cnt(1 << N);
+    for (int i = 0; i < n; i++) {
+        string s;
+        cin >> s;
+        int mask = 0;
+        for (char c : s) mask |= (1 << id[c - 'A']);
+        cnt[mask]++;
+    }
+    for (int i = 0; i < N; i++) {
+        for (int mask = 0; mask < (1 << N); mask++) {
+            if (mask & (1 << i)) cnt[mask] += cnt[mask ^ (1 << i)];
+        }
+    }
+so here all num of ways

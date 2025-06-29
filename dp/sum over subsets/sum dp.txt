@@ -1,0 +1,17 @@
+  int N = 20;                // number of bits (size of the set)
+    vector<int> A(1 << N);      // input array: A[mask]
+    vector<int> F(1 << N);      // output array: F[mask] = sum over all subsets of mask
+
+    vector<vector<int>> dp(1 << N, vector<int>(N)); // dp[mask][i] for 0 ≤ i < N
+
+    for (int mask = 0; mask < (1 << N); ++mask) {
+        int base = A[mask]; // simulate dp[mask][-1]
+        for (int i = 0; i < N; ++i) {
+            if (mask & (1 << i)) {
+                dp[mask][i] = (i == 0 ? base : dp[mask][i - 1]) + (i == 0 ? 0 : dp[mask ^ (1 << i)][i - 1]);
+            } else {
+                dp[mask][i] = (i == 0 ? base : dp[mask][i - 1]);
+            }
+        }
+        F[mask] = dp[mask][N - 1];
+    }
